@@ -1,0 +1,53 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Dependencies
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Production
+build/
+
+# Misc
+*.seed
+*.log
+.DS_Store
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+target/
+.mvn/
+
+# Spring Boot
+application-prod.properties
+
+# Uploads (optional - 如果不想上传图片可以保留这行)
+# uploads/

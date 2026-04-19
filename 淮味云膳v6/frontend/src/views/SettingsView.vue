@@ -1,0 +1,879 @@
+<template>
+  <div class="flex h-screen overflow-hidden text-on-background">
+    <aside class="h-full w-[15%] fixed left-0 top-0 bg-slate-100 dark:bg-slate-800 flex flex-col py-8 z-50">
+      <div class="px-6 mb-10">
+        <h1 class="text-xl font-bold text-teal-900 dark:text-teal-100 mb-1">淮味云膳</h1>
+        <p class="text-xs text-on-surface-variant font-medium opacity-70">管理员端</p>
+      </div>
+      <nav class="flex-1 space-y-2">
+        <router-link 
+          to="/admin"
+          class="flex items-center gap-4 px-6 py-4 text-slate-600 dark:text-slate-400 font-manrope text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors active:scale-95 duration-200"
+        >
+          <span class="w-6 h-6 flex items-center justify-center">📊</span>
+          <span>数据概览</span>
+        </router-link>
+        <router-link 
+          to="/orders"
+          class="flex items-center gap-4 px-6 py-4 text-slate-600 dark:text-slate-400 font-manrope text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors active:scale-95 duration-200"
+          :class="{ 'bg-teal-100 dark:bg-teal-900/40 text-teal-900 dark:text-teal-100 border-l-4 border-teal-700': $route.path === '/orders' }"
+        >
+          <span class="w-6 h-6 flex items-center justify-center">📋</span>
+          <span>订单</span>
+        </router-link>
+        <router-link 
+          to="/settings"
+          class="flex items-center gap-4 px-6 py-4 text-slate-600 dark:text-slate-400 font-manrope text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors active:scale-95 duration-200"
+          :class="{ 'bg-teal-100 dark:bg-teal-900/40 text-teal-900 dark:text-teal-100 border-l-4 border-teal-700': $route.path === '/settings' }"
+        >
+          <span class="w-6 h-6 flex items-center justify-center">⚙️</span>
+          <span>设置</span>
+        </router-link>
+      </nav>
+      <div class="px-6 mt-auto">
+        <div class="flex items-center gap-3 py-3 px-4 bg-surface-container rounded-xl">
+          <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+            <span class="text-primary font-semibold">{{ userStore.username?.charAt(0) || '管' }}</span>
+          </div>
+          <div class="flex-1">
+            <p class="text-sm font-medium">{{ userStore.username }}</p>
+            <p class="text-xs text-on-surface-variant">{{ userStore.roleName }}</p>
+          </div>
+          <button @click="handleLogout" class="text-red-500 hover:text-red-600 text-sm">退出</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content (85%) -->
+    <main class="h-full w-[85%] ml-[15%] bg-slate-50 dark:bg-slate-900 p-8 overflow-y-auto">
+      <header class="mb-8">
+        <h2 class="text-2xl font-bold text-on-surface">设置</h2>
+        <p class="text-sm text-on-surface-variant mt-1">管理系统设置</p>
+      </header>
+
+      <!-- Settings Tabs -->
+      <div class="bg-surface rounded-xl shadow-sm p-6">
+        <div class="flex border-b border-slate-200 dark:border-slate-800 mb-6">
+          <button 
+            v-for="tab in tabs" 
+            :key="tab.id"
+            :class="[
+              'px-6 py-3 font-medium transition-colors',
+              activeTab === tab.id ? 'text-teal-700 dark:text-teal-400 border-b-2 border-teal-700 dark:border-teal-400' : 'text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-300'
+            ]"
+            @click="activeTab = tab.id"
+          >
+            {{ tab.name }}
+          </button>
+        </div>
+
+        <!-- Basic Settings Form -->
+        <div v-if="activeTab === 'basic'" class="space-y-6">
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-on-surface-variant mb-2">餐厅名称</label>
+              <input type="text" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="restaurantInfo.name" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-on-surface-variant mb-2">联系电话</label>
+              <input type="tel" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="restaurantInfo.phone" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">餐厅地址</label>
+            <input type="text" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="restaurantInfo.address" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">营业时间</label>
+            <div class="flex gap-4">
+              <input type="time" class="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="restaurantInfo.openTime" />
+              <span class="flex items-center">至</span>
+              <input type="time" class="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="restaurantInfo.closeTime" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">餐厅简介</label>
+            <textarea class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" rows="4" v-model="restaurantInfo.description"></textarea>
+          </div>
+
+          <div class="flex justify-end">
+            <button class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors" @click="saveBasicSettings">
+              保存设置
+            </button>
+          </div>
+        </div>
+
+        <!-- Dish Management Form -->
+        <div v-if="activeTab === 'dish'" class="space-y-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-on-surface">菜品管理</h3>
+            <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" @click="openAddDishModal">
+              添加菜品
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-slate-200 dark:border-slate-700">
+                  <th class="text-left py-3 px-4 text-sm font-medium text-on-surface-variant">菜品名称</th>
+                  <th class="text-left py-3 px-4 text-sm font-medium text-on-surface-variant">分类</th>
+                  <th class="text-left py-3 px-4 text-sm font-medium text-on-surface-variant">价格</th>
+                  <th class="text-left py-3 px-4 text-sm font-medium text-on-surface-variant">状态</th>
+                  <th class="text-left py-3 px-4 text-sm font-medium text-on-surface-variant">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="dish in dishes" :key="dish.id" class="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
+                  <td class="py-3 px-4 text-sm text-on-surface">{{ dish.name }}</td>
+                  <td class="py-3 px-4 text-sm text-on-surface">{{ getCategoryName(dish.categoryId) }}</td>
+                  <td class="py-3 px-4 text-sm text-on-surface">¥{{ dish.price }}</td>
+                  <td class="py-3 px-4 text-sm">
+                    <span :class="[
+                      'px-2 py-1 rounded-full text-xs font-medium',
+                      dish.status === 1 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                    ]">
+                      {{ dish.status === 1 ? '起售' : '停售' }}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4">
+                    <button class="text-primary hover:text-primary/80 text-sm font-medium mr-3" @click="openEditDishModal(dish)">编辑</button>
+                    <button class="text-red-500 hover:text-red-600 text-sm font-medium" @click="deleteDish(dish.id)">删除</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State -->
+          <div v-if="dishes.length === 0" class="text-center py-12">
+            <div class="w-16 h-16 mx-auto mb-4 bg-surface-container rounded-full flex items-center justify-center">
+              <span class="text-2xl">🍽️</span>
+            </div>
+            <h4 class="text-lg font-semibold text-on-surface mb-2">暂无菜品</h4>
+            <p class="text-sm text-on-surface-variant">点击添加菜品按钮添加新菜品</p>
+          </div>
+        </div>
+
+        <!-- User Management Form -->
+        <div v-if="activeTab === 'user'" class="space-y-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-on-surface">用户管理</h3>
+            <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" @click="openAddUserModal">
+              添加用户
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-slate-200 dark:border-slate-700">
+                  <th class="text-left py-3 px-4 text-sm font-medium text-on-surface-variant">用户名</th>
+                  <th class="text-left py-3 px-4 text-sm font-medium text-on-surface-variant">手机号</th>
+                  <th class="text-left py-3 px-4 text-sm font-medium text-on-surface-variant">角色</th>
+                  <th class="text-left py-3 px-4 text-sm font-medium text-on-surface-variant">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="user in users" :key="user.id" class="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
+                  <td class="py-3 px-4 text-sm text-on-surface">{{ user.username }}</td>
+                  <td class="py-3 px-4 text-sm text-on-surface">{{ user.phone }}</td>
+                  <td class="py-3 px-4 text-sm">
+                    <span :class="[
+                      'px-2 py-1 rounded-full text-xs font-medium',
+                      user.role === 1 ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                      user.role === 2 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                      user.role === 3 ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400' :
+                      'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+                    ]">
+                      {{ user.role === 1 ? '管理员' : user.role === 2 ? '收银员' : user.role === 3 ? '后厨' : '顾客' }}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4">
+                    <button class="text-primary hover:text-primary/80 text-sm font-medium mr-3" @click="openEditUserModal(user)">编辑</button>
+                    <button class="text-red-500 hover:text-red-600 text-sm font-medium" @click="deleteUser(user.id)">删除</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State -->
+          <div v-if="users.length === 0" class="text-center py-12">
+            <div class="w-16 h-16 mx-auto mb-4 bg-surface-container rounded-full flex items-center justify-center">
+              <span class="text-2xl">👤</span>
+            </div>
+            <h4 class="text-lg font-semibold text-on-surface mb-2">暂无用户</h4>
+            <p class="text-sm text-on-surface-variant">点击添加用户按钮添加新用户</p>
+          </div>
+        </div>
+
+        <!-- Personal Settings Form -->
+        <div v-if="activeTab === 'profile'" class="space-y-6">
+          <h3 class="text-lg font-semibold text-on-surface mb-4">个人设置</h3>
+
+          <!-- User Information -->
+          <div class="bg-surface-container rounded-xl p-6">
+            <h4 class="font-medium text-on-surface mb-4">用户信息</h4>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-on-surface-variant mb-2">用户名</label>
+                <input type="text" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface dark:bg-slate-800 text-on-surface" v-model="userInfo.username" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-on-surface-variant mb-2">手机号</label>
+                <input type="tel" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface dark:bg-slate-800 text-on-surface" v-model="userInfo.phone" />
+              </div>
+              <div class="flex justify-end">
+                <button class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors" @click="updateProfile">
+                  保存修改
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Password Change -->
+          <div class="bg-surface-container rounded-xl p-6">
+            <h4 class="font-medium text-on-surface mb-4">修改密码</h4>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-on-surface-variant mb-2">旧密码</label>
+                <input type="password" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface dark:bg-slate-800 text-on-surface" v-model="passwordInfo.oldPassword" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-on-surface-variant mb-2">新密码</label>
+                <input type="password" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface dark:bg-slate-800 text-on-surface" v-model="passwordInfo.newPassword" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-on-surface-variant mb-2">确认新密码</label>
+                <input type="password" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface dark:bg-slate-800 text-on-surface" v-model="passwordInfo.confirmPassword" />
+              </div>
+              <div class="flex justify-end">
+                <button class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors" @click="changePassword">
+                  修改密码
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Configuration Form -->
+        <div v-if="activeTab === 'system'" class="space-y-6">
+          <h3 class="text-lg font-semibold text-on-surface mb-4">系统配置</h3>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-on-surface-variant mb-2">系统名称</label>
+              <input type="text" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="systemConfig.systemName" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-on-surface-variant mb-2">系统版本</label>
+              <input type="text" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="systemConfig.version" disabled />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-on-surface-variant mb-2">数据库连接</label>
+              <input type="text" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="systemConfig.databaseUrl" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-on-surface-variant mb-2">服务器端口</label>
+              <input type="number" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="systemConfig.port" />
+            </div>
+
+            <div class="flex justify-end">
+              <button class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors" @click="saveSystemSettings">
+                保存设置
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Add Dish Modal -->
+    <div v-if="showAddDishModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-surface rounded-xl shadow-lg p-6 w-full max-w-md">
+        <h3 class="text-lg font-semibold text-on-surface mb-4">添加菜品</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">菜品名称</label>
+            <input type="text" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="newDish.name" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">分类</label>
+            <select class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="newDish.categoryId">
+              <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">价格</label>
+            <input type="number" step="0.01" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="newDish.price" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">状态</label>
+            <select class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="newDish.status">
+              <option value="1">起售</option>
+              <option value="0">停售</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">描述</label>
+            <textarea class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" rows="3" v-model="newDish.description"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">菜品图片</label>
+            <input type="file" accept="image/*" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" @change="handleImageUpload($event, 'new')" />
+            <div v-if="newDish.imageUrl" class="mt-2">
+              <img :src="newDish.imageUrl ? backendUrl + newDish.imageUrl : ''" class="w-20 h-20 object-cover rounded-lg" />
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 mt-6">
+          <button class="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-sm font-medium transition-colors" @click="showAddDishModal = false">取消</button>
+          <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" @click="addDish">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Dish Modal -->
+    <div v-if="showEditDishModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-surface rounded-xl shadow-lg p-6 w-full max-w-md">
+        <h3 class="text-lg font-semibold text-on-surface mb-4">编辑菜品</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">菜品名称</label>
+            <input type="text" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="editDish.name" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">分类</label>
+            <select class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="editDish.categoryId">
+              <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">价格</label>
+            <input type="number" step="0.01" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="editDish.price" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">状态</label>
+            <select class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="editDish.status">
+              <option value="1">起售</option>
+              <option value="0">停售</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">描述</label>
+            <textarea class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" rows="3" v-model="editDish.description"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">菜品图片</label>
+            <input type="file" accept="image/*" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" @change="handleImageUpload($event, 'edit')" />
+            <div v-if="editDish.imageUrl" class="mt-2">
+              <img :src="editDish.imageUrl ? backendUrl + editDish.imageUrl : ''" class="w-20 h-20 object-cover rounded-lg" />
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 mt-6">
+          <button class="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-sm font-medium transition-colors" @click="showEditDishModal = false">取消</button>
+          <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" @click="updateDish">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div v-if="showAddUserModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-surface rounded-xl shadow-lg p-6 w-full max-w-md">
+        <h3 class="text-lg font-semibold text-on-surface mb-4">添加用户</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">用户名</label>
+            <input type="text" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="newUser.username" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">密码</label>
+            <input type="password" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="newUser.password" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">手机号</label>
+            <input type="tel" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="newUser.phone" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">角色</label>
+            <select class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="newUser.role">
+              <option :value="1">管理员</option>
+              <option :value="2">收银员</option>
+              <option :value="3">后厨</option>
+              <option :value="0">顾客</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 mt-6">
+          <button class="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-sm font-medium transition-colors" @click="showAddUserModal = false">取消</button>
+          <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" @click="addUser">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div v-if="showEditUserModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-surface rounded-xl shadow-lg p-6 w-full max-w-md">
+        <h3 class="text-lg font-semibold text-on-surface mb-4">编辑用户</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">用户名</label>
+            <input type="text" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="editUser.username" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">手机号</label>
+            <input type="tel" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="editUser.phone" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">角色</label>
+            <select class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="editUser.role">
+              <option :value="1">管理员</option>
+              <option :value="2">收银员</option>
+              <option :value="3">后厨</option>
+              <option :value="0">顾客</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 mt-6">
+          <button class="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-sm font-medium transition-colors" @click="showEditUserModal = false">取消</button>
+          <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" @click="updateUser">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+import request, { imageBaseURL } from '../utils/request'
+import { useUserStore } from '../stores/user'
+
+const router = useRouter()
+const userStore = useUserStore()
+
+const backendUrl = imageBaseURL // 使用imageBaseURL，自动适配当前环境
+
+// 响应式数据
+const activeTab = ref('basic')
+const restaurantInfo = ref({
+  name: '',
+  phone: '',
+  address: '',
+  openTime: '09:00',
+  closeTime: '21:00',
+  description: ''
+})
+const dishes = ref([])
+const users = ref([])
+const systemConfig = ref({
+  systemName: '淮味云膳',
+  version: '1.0.0',
+  databaseUrl: 'jdbc:mysql://localhost:3306/huaiwei-v2',
+  port: 8080
+})
+
+// 菜品管理相关数据
+const showAddDishModal = ref(false)
+const showEditDishModal = ref(false)
+const newDish = ref({
+  name: '',
+  categoryId: '',
+  price: '',
+  status: 1,
+  description: '',
+  imageUrl: ''
+})
+const editDish = ref({
+  id: '',
+  name: '',
+  categoryId: '',
+  price: '',
+  status: 1,
+  description: '',
+  imageUrl: ''
+})
+const categories = ref([])
+
+// 用户管理相关数据
+const showAddUserModal = ref(false)
+const showEditUserModal = ref(false)
+const newUser = ref({
+  username: '',
+  password: '',
+  phone: '',
+  role: 0
+})
+const editUser = ref({
+  id: '',
+  username: '',
+  phone: '',
+  role: 0
+})
+
+// 个人设置相关数据
+const userInfo = ref({
+  username: '',
+  phone: ''
+})
+const passwordInfo = ref({
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: ''
+})
+
+// 标签页数据
+const tabs = [
+  { id: 'basic', name: '基本设置' },
+  { id: 'dish', name: '菜品管理' },
+  { id: 'user', name: '用户管理' },
+  { id: 'profile', name: '个人设置' },
+  { id: 'system', name: '系统配置' }
+]
+
+// 生命周期钩子：组件挂载时的操作
+onMounted(() => {
+  // 检查URL参数，自动切换到个人设置标签页
+  const urlParams = new URLSearchParams(window.location.search)
+  const tab = urlParams.get('tab')
+  if (tab === 'profile') {
+    activeTab.value = 'profile'
+  }
+  
+  fetchBasicSettings()
+  fetchDishes()
+  fetchUsers()
+  fetchCategories()
+  fetchUserProfile()
+})
+
+// 获取基本设置
+const fetchBasicSettings = async () => {
+  try {
+    const response = await request.get('/restaurant/info')
+    restaurantInfo.value = response
+  } catch (error) {
+    console.error('获取基本设置失败:', error)
+  }
+}
+
+// 保存基本设置
+const saveBasicSettings = async () => {
+  try {
+    await request.post('/restaurant/save', restaurantInfo.value)
+    // 保存成功
+  } catch (error) {
+    console.error('保存基本设置失败:', error)
+  }
+}
+
+// 获取菜品列表
+const fetchDishes = async () => {
+  try {
+    const response = await request.get('/dish/list')
+    console.log('获取菜品列表响应:', response)
+    dishes.value = response
+    console.log('获取到的菜品数据:', dishes.value)
+  } catch (error) {
+    console.error('获取菜品列表失败:', error)
+  }
+}
+
+// 获取菜品分类
+const fetchCategories = async () => {
+  try {
+    const response = await request.get('/category/list')
+    categories.value = response
+  } catch (error) {
+    console.error('获取菜品分类失败:', error)
+  }
+}
+
+// 获取分类文本
+const getCategoryName = (categoryId) => {
+  const cat = categories.value.find(c => c.id === categoryId)
+  return cat ? cat.name : '未知分类'
+}
+
+// 打开添加菜品模态框
+const openAddDishModal = () => {
+  newDish.value = {
+    name: '',
+    categoryId: categories.value.length > 0 ? categories.value[0].id : '',
+    price: '',
+    status: 1,
+    description: ''
+  }
+  showAddDishModal.value = true
+}
+
+// 打开编辑菜品模态框
+const openEditDishModal = (dish) => {
+  editDish.value = {
+    id: dish.id,
+    name: dish.name,
+    categoryId: dish.categoryId,
+    price: dish.price,
+    status: dish.status,
+    description: dish.description,
+    imageUrl: dish.imageUrl
+  }
+  showEditDishModal.value = true
+}
+
+// 处理本地图片选择
+const handleLocalImageSelect = (event, type) => {
+  const file = event.target.files[0]
+  if (file) {
+    // 使用FileReader读取本地图片
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const imageUrl = e.target.result
+      console.log('选择本地图片，URL:', imageUrl)
+      if (type === 'new') {
+        newDish.value.imageUrl = imageUrl
+        console.log('设置新菜品图片URL:', newDish.value.imageUrl)
+      } else {
+        editDish.value.imageUrl = imageUrl
+        console.log('设置编辑菜品图片URL:', editDish.value.imageUrl)
+      }
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
+// 处理图片上传
+const handleImageUpload = async (event, type) => {
+  const file = event.target.files[0]
+  if (file) {
+    const formData = new FormData()
+    formData.append('file', file)
+    
+    try {
+      console.log('上传图片:', file.name)
+      // 使用request实例发送请求
+      const response = await request({
+        method: 'POST',
+        url: '/dish/upload',
+        data: formData
+        // 不手动设置Content-Type，让浏览器自动生成
+      })
+      
+      // 确保提取出纯字符串路径
+      const imageUrl = typeof response === 'string' ? response : (response && response.data ? response.data : '')
+      console.log('上传图片成功，返回URL:', imageUrl)
+      
+      if (type === 'new') {
+        newDish.value.imageUrl = imageUrl
+        console.log('设置新菜品图片URL:', newDish.value.imageUrl)
+      } else {
+        editDish.value.imageUrl = imageUrl
+        console.log('设置编辑菜品图片URL:', editDish.value.imageUrl)
+      }
+    } catch (error) {
+      console.error('上传图片失败:', error)
+      console.dir(error)
+      console.error('上传图片失败详细信息:', error.response)
+      if (error.response && error.response.data) {
+        console.error('服务器返回的错误数据:', error.response.data)
+      }
+    }
+  }
+}
+
+// 添加菜品
+const addDish = async () => {
+  try {
+    console.log('添加菜品:', newDish.value)
+    const result = await request({
+      method: 'POST',
+      url: '/dish',
+      data: newDish.value
+    })
+    console.log('添加菜品成功:', result)
+    showAddDishModal.value = false
+    fetchDishes()
+  } catch (error) {
+    console.error('添加菜品失败:', error)
+  }
+}
+
+// 更新菜品
+const updateDish = async () => {
+  try {
+    console.log('更新菜品开始:', editDish.value)
+    console.log('编辑菜品图片URL:', editDish.value.imageUrl)
+    const result = await request({
+      method: 'PUT',
+      url: '/dish',
+      data: editDish.value
+    })
+    console.log('更新菜品成功:', result)
+    showEditDishModal.value = false
+    fetchDishes()
+  } catch (error) {
+    console.error('更新菜品失败:', error)
+    console.error('更新菜品失败详细信息:', error.response)
+  }
+}
+
+// 删除菜品
+const deleteDish = async (id) => {
+  try {
+    const response = await axios.delete(`/api/dish/${id}`)
+    if (response.data.code === 200) {
+      fetchDishes()
+    }
+  } catch (error) {
+    console.error('删除菜品失败:', error)
+  }
+}
+
+// 获取用户列表
+const fetchUsers = async () => {
+  try {
+    const response = await request.get('/user/list')
+    users.value = response
+  } catch (error) {
+    console.error('获取用户列表失败:', error)
+  }
+}
+
+// 打开添加用户模态框
+const openAddUserModal = () => {
+  newUser.value = {
+    username: '',
+    password: '',
+    phone: '',
+    role: 0
+  }
+  showAddUserModal.value = true
+}
+
+// 打开编辑用户模态框
+const openEditUserModal = (user) => {
+  editUser.value = {
+    id: user.id,
+    username: user.username,
+    phone: user.phone,
+    role: user.role
+  }
+  showEditUserModal.value = true
+}
+
+// 添加用户
+const addUser = async () => {
+  try {
+    await request.post('/user', newUser.value)
+    showAddUserModal.value = false
+    fetchUsers()
+  } catch (error) {
+    console.error('添加用户失败:', error)
+    alert('添加用户失败')
+  }
+}
+
+// 更新用户
+const updateUser = async () => {
+  try {
+    await request.put('/user', editUser.value)
+    showEditUserModal.value = false
+    fetchUsers()
+  } catch (error) {
+    console.error('更新用户失败:', error)
+    alert('更新用户失败')
+  }
+}
+
+// 删除用户
+const deleteUser = async (id) => {
+  if (!confirm('确定要删除该用户吗？')) return;
+  try {
+    await request.delete(`/user/${id}`)
+    fetchUsers()
+  } catch (error) {
+    console.error('删除用户失败:', error)
+    alert('删除用户失败')
+  }
+}
+
+// 保存系统设置
+const saveSystemSettings = async () => {
+  try {
+    await request.post('/system/save', systemConfig.value)
+    // 保存成功
+  } catch (error) {
+    console.error('保存系统设置失败:', error)
+  }
+}
+
+// 获取用户信息
+const fetchUserProfile = async () => {
+  try {
+    const response = await request.get('/user/profile')
+    userInfo.value = response
+  } catch (error) {
+    console.error('获取用户信息失败:', error)
+  }
+}
+
+// 更新用户信息
+const updateProfile = async () => {
+  try {
+    await request.put('/user/profile', userInfo.value)
+    // 更新成功
+  } catch (error) {
+    console.error('更新用户信息失败:', error)
+  }
+}
+
+// 修改密码
+const changePassword = async () => {
+  if (passwordInfo.value.newPassword !== passwordInfo.value.confirmPassword) {
+    console.error('新密码和确认密码不一致')
+    return
+  }
+  
+  try {
+    await request.put('/user/password', {
+      oldPassword: passwordInfo.value.oldPassword,
+      newPassword: passwordInfo.value.newPassword
+    })
+    passwordInfo.value = {
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    }
+  } catch (error) {
+    console.error('修改密码失败:', error)
+  }
+}
+
+const handleLogout = () => {
+  userStore.logout()
+  router.push('/login')
+}
+</script>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+/* 导入Google字体 */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: 'Manrope', sans-serif;
+}
+</style>

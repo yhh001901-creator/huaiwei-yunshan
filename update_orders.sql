@@ -1,0 +1,2 @@
+USE `huaiwei-v2`;
+ALTER TABLE orders ADD COLUMN table_no VARCHAR(20) DEFAULT NULL COMMENT '桌号';
