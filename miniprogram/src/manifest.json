@@ -1,0 +1,32 @@
+{
+  "name": "淮味云膳",
+  "appid": "wxcba40aacfa2332a9",
+  "description": "淮味云膳小程序",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "app-plus": {
+    "usingComponents": true,
+    "splashscreen": {
+      "alwaysShowBeforeRender": true,
+      "waiting": true,
+      "autoclose": true,
+      "delay": 0
+    },
+    "modules": {}
+  },
+  "mp-weixin": {
+    "appid": "wxcba40aacfa2332a9",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "postcss": false,
+      "minified": false,
+      "bigPackageSizeSupport": true
+    },
+    "usingComponents": true
+  },
+  "h5": {
+    "title": "淮味云膳"
+  }
+}

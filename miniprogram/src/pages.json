@@ -1,0 +1,61 @@
+{
+  "lazyCodeLoading": "requiredComponents",
+  "pages": [
+    {
+      "path": "pages/login/login",
+      "style": {
+        "navigationBarTitleText": "登录"
+      }
+    },
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "淮味云膳"
+      }
+    },
+    {
+      "path": "pages/orders/orders",
+      "style": {
+        "navigationBarTitleText": "我的订单"
+      }
+    },
+    {
+      "path": "pages/mine/mine",
+      "style": {
+        "navigationBarTitleText": "个人中心"
+      }
+    },
+    {
+      "path": "pages/member/member",
+      "style": {
+        "navigationBarTitleText": "会员中心"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "淮味云膳",
+    "navigationBarBackgroundColor": "#F97316",
+    "backgroundColor": "#FFF9F5"
+  },
+  "tabBar": {
+    "color": "#94A3B8",
+    "selectedColor": "#F97316",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "点餐"
+      },
+      {
+        "pagePath": "pages/orders/orders",
+        "text": "订单"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
+      }
+    ]
+  }
+}

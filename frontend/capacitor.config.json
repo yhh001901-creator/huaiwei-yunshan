@@ -1,0 +1,11 @@
+{
+  "appId": "com.huaiwei.yunshan",
+  "appName": "淮味云膳",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true,
+    "hostname": "localhost",
+    "iosScheme": "capacitor"
+  }
+}
