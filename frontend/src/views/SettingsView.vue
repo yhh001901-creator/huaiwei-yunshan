@@ -99,10 +99,19 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="member in members" :key="member.userId" class="bg-surface border-b">
-                  <td class="px-6 py-4">{{ member.userId }}</td>
-                  <td class="px-6 py-4">{{ member.username }}</td>
-                  <td class="px-6 py-4">{{ member.phone }}</td>
+                <tr v-if="!members || members.length === 0">
+                  <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant">
+                    <div class="flex flex-col items-center gap-2">
+                      <span class="text-4xl">👑</span>
+                      <p>暂无会员数据</p>
+                      <button @click="fetchMembers" class="text-primary hover:underline text-sm">重新加载</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-for="member in members" :key="member.userId || member.id" class="bg-surface border-b">
+                  <td class="px-6 py-4">{{ member.userId || member.id }}</td>
+                  <td class="px-6 py-4">{{ member.username || member.name || '-' }}</td>
+                  <td class="px-6 py-4">{{ member.phone || '-' }}</td>
                   <td class="px-6 py-4">
                     <span v-if="member.isMember" class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200">已开通</span>
                     <span v-else class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900/40 dark:text-gray-200">未开通</span>
@@ -172,7 +181,7 @@
                   <td class="px-6 py-4">{{ dish.name }}</td>
                   <td class="px-6 py-4">{{ getCategoryName(dish.categoryId) }}</td>
                   <td class="px-6 py-4">¥{{ dish.price }}</td>
-                  <td class="px-6 py-4">¥{{ getMemberPrice(dish.id) }}</td>
+                  <td class="px-6 py-4">{{ getMemberPrice(dish.id) !== '-' ? '¥' + getMemberPrice(dish.id) : '-' }}</td>
                   <td class="px-6 py-4">
                     <span v-if="dish.status === 1" class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200">起售</span>
                     <span v-else class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900/40 dark:text-gray-200">停售</span>
@@ -206,10 +215,19 @@
                 </tr>
               </thead>
               <tbody>
+                <tr v-if="!users || users.length === 0">
+                  <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant">
+                    <div class="flex flex-col items-center gap-2">
+                      <span class="text-4xl">👥</span>
+                      <p>暂无用户数据</p>
+                      <button @click="fetchUsers" class="text-primary hover:underline text-sm">重新加载</button>
+                    </div>
+                  </td>
+                </tr>
                 <tr v-for="user in users" :key="user.id" class="bg-surface border-b">
                   <td class="px-6 py-4">{{ user.id }}</td>
-                  <td class="px-6 py-4">{{ user.username }}</td>
-                  <td class="px-6 py-4">{{ user.phone }}</td>
+                  <td class="px-6 py-4">{{ user.username || '-' }}</td>
+                  <td class="px-6 py-4">{{ user.phone || '-' }}</td>
                   <td class="px-6 py-4">
                     <span v-if="user.role === 1" class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200">管理员</span>
                     <span v-else-if="user.role === 2" class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200">收银员</span>
@@ -308,6 +326,10 @@
             <input type="number" step="0.01" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="newDish.price" />
           </div>
           <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">会员价（可选）</label>
+            <input type="number" step="0.01" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="newDish.memberPrice" placeholder="不填写则无会员价" />
+          </div>
+          <div>
             <label class="block text-sm font-medium text-on-surface-variant mb-2">状态</label>
             <select class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="newDish.status">
               <option value="1">起售</option>
@@ -350,6 +372,10 @@
           <div>
             <label class="block text-sm font-medium text-on-surface-variant mb-2">价格</label>
             <input type="number" step="0.01" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="editDish.price" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">会员价（可选）</label>
+            <input type="number" step="0.01" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-surface-container dark:bg-slate-800 text-on-surface" v-model="editDish.memberPrice" placeholder="不填写则无会员价" />
           </div>
           <div>
             <label class="block text-sm font-medium text-on-surface-variant mb-2">状态</label>
@@ -442,7 +468,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import request, { imageBaseURL } from '../utils/request'
@@ -465,8 +491,8 @@ const systemConfig = ref({ systemName: '淮味云膳', version: '1.0.0', databas
 // 菜品管理相关数据
 const showAddDishModal = ref(false)
 const showEditDishModal = ref(false)
-const newDish = ref({ name: '', categoryId: '', price: '', status: 1, description: '', imageUrl: '' })
-const editDish = ref({ id: '', name: '', categoryId: '', price: '', status: 1, description: '', imageUrl: '' })
+const newDish = ref({ name: '', categoryId: '', price: '', status: 1, description: '', imageUrl: '', memberPrice: '' })
+const editDish = ref({ id: '', name: '', categoryId: '', price: '', status: 1, description: '', imageUrl: '', memberPrice: '' })
 const categories = ref([])
 
 // 用户管理相关数据
@@ -508,6 +534,25 @@ onMounted(() => {
   fetchMemberPrices()
 })
 
+// 监听标签切换
+watch(activeTab, (newTab) => {
+  if (newTab === 'user') {
+    console.log('切换到用户管理标签，重新加载数据')
+    fetchUsers()
+  } else if (newTab === 'member') {
+    console.log('切换到会员管理标签，重新加载数据')
+    fetchMembers()
+  } else if (newTab === 'coupon') {
+    console.log('切换到优惠券标签，重新加载数据')
+    fetchCouponTemplates()
+  } else if (newTab === 'dish') {
+    console.log('切换到菜品管理标签，重新加载数据')
+    fetchDishes()
+    fetchCategories()
+    fetchMemberPrices()
+  }
+})
+
 // 获取会员价
 const fetchMemberPrices = async () => {
   try {
@@ -523,7 +568,8 @@ const fetchMemberPrices = async () => {
 }
 
 const getMemberPrice = (dishId) => {
-  return memberPrices.value[dishId]
+  const price = memberPrices.value[dishId]
+  return price !== undefined ? price : '-'
 }
 
 // 一键补货
@@ -694,35 +740,23 @@ const getCategoryName = (categoryId) => {
 
 // 打开添加菜品模态框
 const openAddDishModal = () => {
-  newDish.value = { name: '', categoryId: categories.value.length > 0 ? categories.value[0].id : '', price: '', status: 1, description: '' }
+  newDish.value = { name: '', categoryId: categories.value.length > 0 ? categories.value[0].id : '', price: '', status: 1, description: '', memberPrice: '' }
   showAddDishModal.value = true
 }
 
 // 打开编辑菜品模态框
 const openEditDishModal = (dish) => {
-  editDish.value = { id: dish.id, name: dish.name, categoryId: dish.categoryId, price: dish.price, status: dish.status, description: dish.description, imageUrl: dish.imageUrl }
-  showEditDishModal.value = true
-}
-
-// 处理本地图片选择
-const handleLocalImageSelect = (event, type) => {
-  const file = event.target.files[0]
-  if (file) {
-    // 使用FileReader读取本地图片
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const imageUrl = e.target.result
-      console.log('选择本地图片，URL:', imageUrl)
-      if (type === 'new') {
-        newDish.value.imageUrl = imageUrl
-        console.log('设置新菜品图片URL:', newDish.value.imageUrl)
-      } else {
-        editDish.value.imageUrl = imageUrl
-        console.log('设置编辑菜品图片URL:', editDish.value.imageUrl)
-      }
-    }
-    reader.readAsDataURL(file)
+  editDish.value = { 
+    id: dish.id, 
+    name: dish.name, 
+    categoryId: dish.categoryId, 
+    price: dish.price, 
+    status: dish.status, 
+    description: dish.description, 
+    imageUrl: dish.imageUrl,
+    memberPrice: memberPrices.value[dish.id] || ''
   }
+  showEditDishModal.value = true
 }
 
 // 处理图片上传
@@ -770,8 +804,18 @@ const addDish = async () => {
       data: newDish.value
     })
     console.log('添加菜品成功:', result)
+    
+    // 如果设置了会员价，保存会员价
+    if (newDish.value.memberPrice) {
+      const dishId = result.id || result.data?.id
+      if (dishId) {
+        await saveMemberPrice(dishId, newDish.value.memberPrice)
+      }
+    }
+    
     showAddDishModal.value = false
     fetchDishes()
+    fetchMemberPrices()
   } catch (error) {
     console.error('添加菜品失败:', error)
   }
@@ -788,33 +832,59 @@ const updateDish = async () => {
       data: editDish.value
     })
     console.log('更新菜品成功:', result)
+    
+    // 保存会员价
+    await saveMemberPrice(editDish.value.id, editDish.value.memberPrice)
+    
     showEditDishModal.value = false
     fetchDishes()
+    fetchMemberPrices()
   } catch (error) {
     console.error('更新菜品失败:', error)
     console.error('更新菜品失败详细信息:', error.response)
   }
 }
 
-// 删除菜品
-const deleteDish = async (id) => {
+// 保存会员价
+const saveMemberPrice = async (dishId, memberPrice) => {
   try {
-    const response = await axios.delete(`/api/dish/${id}`)
-    if (response.data.code === 200) {
-      fetchDishes()
+    if (memberPrice) {
+      await request.post('/dish/member-price', {
+        dishId: dishId,
+        memberPrice: parseFloat(memberPrice)
+      })
+    } else {
+      // 如果会员价为空，删除会员价
+      await request.delete(`/dish/member-price/${dishId}`)
     }
   } catch (error) {
+    console.error('保存会员价失败:', error)
+  }
+}
+
+// 删除菜品
+const deleteDish = async (id) => {
+  if (!confirm('确定要删除该菜品吗？')) return
+  try {
+    await request.delete(`/dish/${id}`)
+    fetchDishes()
+  } catch (error) {
     console.error('删除菜品失败:', error)
+    alert('删除菜品失败')
   }
 }
 
 // 获取用户列表
 const fetchUsers = async () => {
   try {
+    console.log('开始获取用户列表...')
     const response = await request.get('/user/list')
+    console.log('用户列表响应:', response)
     users.value = response
+    console.log('设置后的用户列表:', users.value)
   } catch (error) {
     console.error('获取用户列表失败:', error)
+    alert('获取用户列表失败: ' + (error.message || '未知错误'))
   }
 }
 

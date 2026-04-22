@@ -118,44 +118,51 @@
         </div>
 
         <div v-else-if="currentView === 'orders'" key="orders" class="space-y-4">
-        <div class="flex items-center gap-3 mb-4">
-          <button @click="currentView = 'menu'" class="text-[#F97316] hover:text-[#EA580C]">
-            ← 返回
-          </button>
-          <h2 class="text-lg font-bold text-[#1F2937]">我的订单</h2>
-        </div>
-        <div v-if="myOrders.length === 0" class="text-center py-8 text-[#6B7280]">
-          暂无订单
-        </div>
-        <div v-else class="space-y-3">
-          <div
-            v-for="order in myOrders"
-            :key="order.id"
-            @click="openOrderDetail(order)"
-            class="bg-white rounded-xl shadow-sm p-4 cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98]"
-          >
-            <div class="flex justify-between items-start mb-2">
-              <div>
-                <p class="text-sm text-[#6B7280]">订单号: {{ order.orderNo }}</p>
-                <p class="text-sm text-[#6B7280]">桌号: {{ order.tableNo }}</p>
-              </div>
-              <span
-                :class="[
-                  'px-2 py-1 rounded-full text-xs font-medium',
-                  order.status === 1 ? 'bg-[#F59E0B]/10 text-[#F59E0B]' :
-                  order.status === 2 ? 'bg-blue-100 text-blue-800' :
-                  order.status === 3 ? 'bg-[#10B981]/10 text-[#10B981]' :
-                  'bg-red-100 text-red-800'
-                ]"
-              >
-                {{ getStatusText(order.status) }}
-              </span>
-            </div>
-            <p class="text-lg font-bold text-[#F97316]">¥{{ parseFloat(order.totalAmount).toFixed(2) }}</p>
-            <p class="text-xs text-[#6B7280] mt-1">{{ order.createTime }}</p>
+    <div class="flex items-center gap-3 mb-4">
+      <button @click="currentView = 'menu'" class="text-[#F97316] hover:text-[#EA580C]">
+        ← 返回
+      </button>
+      <h2 class="text-lg font-bold text-[#1F2937]">我的订单</h2>
+      <button @click="fetchMyOrders" class="ml-auto text-xs text-[#F97316] hover:text-[#EA580C]">
+        刷新
+      </button>
+    </div>
+    <div v-if="myOrders.length === 0" class="text-center py-12 text-[#6B7280]">
+      <div class="text-4xl mb-3">📋</div>
+      <p class="mb-2">暂无订单</p>
+      <button @click="currentView = 'menu'" class="text-[#F97316] hover:text-[#EA580C] text-sm">
+        去点餐
+      </button>
+    </div>
+    <div v-else class="space-y-3">
+      <div
+        v-for="order in myOrders"
+        :key="order.id || order.orderNo"
+        @click="openOrderDetail(order)"
+        class="bg-white rounded-xl shadow-sm p-4 cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98]"
+      >
+        <div class="flex justify-between items-start mb-2">
+          <div>
+            <p class="text-sm text-[#6B7280]">订单号: {{ order.orderNo || '未知' }}</p>
+            <p class="text-sm text-[#6B7280]">桌号: {{ order.tableNo || '未知' }}</p>
           </div>
+          <span
+            :class="[
+              'px-2 py-1 rounded-full text-xs font-medium',
+              order.status === 1 ? 'bg-[#F59E0B]/10 text-[#F59E0B]' :
+              order.status === 2 ? 'bg-blue-100 text-blue-800' :
+              order.status === 3 ? 'bg-[#10B981]/10 text-[#10B981]' :
+              'bg-red-100 text-red-800'
+            ]"
+          >
+            {{ getStatusText(order.status) }}
+          </span>
         </div>
-        </div>
+        <p class="text-lg font-bold text-[#F97316]">¥{{ (order.totalAmount ? parseFloat(order.totalAmount).toFixed(2) : '0.00') }}</p>
+        <p class="text-xs text-[#6B7280] mt-1">{{ order.createTime || '时间未知' }}</p>
+      </div>
+    </div>
+  </div>
         
         <div v-else-if="currentView === 'member'" key="member" class="space-y-4">
         <div class="flex items-center gap-3 mb-4">
@@ -470,39 +477,39 @@
       </div>
     </div>
 
-    <div v-if="showOrderDetail" class="fixed inset-0 bg-black/50 z-[100] flex items-end justify-center" @click.self="closeOrderDetail">
+    <div v-if="showOrderDetail" class="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center" @click.self="closeOrderDetail">
       <div 
         ref="orderDetailRef"
-        class="bg-white w-full max-w-lg rounded-t-2xl shadow-2xl max-h-[80vh] flex flex-col"
+        class="bg-white rounded-2xl w-[500px] max-h-[80vh] flex flex-col"
         style="will-change: transform, opacity;"
       >
         <div class="flex items-center justify-between p-4 border-b border-slate-200">
-          <h2 class="text-lg font-bold text-[#1F2937]">订单详情</h2>
+          <h2 class="text-lg font-bold text-slate-800">订单详情</h2>
           <button @click="closeOrderDetail" class="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
         </div>
         
         <div class="flex-1 overflow-y-auto p-4">
           <div class="space-y-4">
             <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-              <span class="text-[#6B7280]">订单号</span>
+              <span class="text-slate-500">订单号</span>
               <span class="font-medium">{{ selectedOrder?.orderNo }}</span>
             </div>
             <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-              <span class="text-[#6B7280]">桌号</span>
+              <span class="text-slate-500">桌号</span>
               <span class="font-medium">{{ selectedOrder?.tableNo || '外带' }}</span>
             </div>
             <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-              <span class="text-[#6B7280]">下单时间</span>
+              <span class="text-slate-500">下单时间</span>
               <span class="font-medium">{{ selectedOrder?.createTime }}</span>
             </div>
             <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-              <span class="text-[#6B7280]">订单状态</span>
+              <span class="text-slate-500">订单状态</span>
               <span
                 :class="[
                   'px-2 py-1 rounded-full text-xs font-medium',
-                  selectedOrder?.status === 1 ? 'bg-[#F59E0B]/10 text-[#F59E0B]' :
+                  selectedOrder?.status === 1 ? 'bg-yellow-100 text-yellow-800' :
                   selectedOrder?.status === 2 ? 'bg-blue-100 text-blue-800' :
-                  selectedOrder?.status === 3 ? 'bg-[#10B981]/10 text-[#10B981]' :
+                  selectedOrder?.status === 3 ? 'bg-green-100 text-green-800' :
                   'bg-red-100 text-red-800'
                 ]"
               >
@@ -511,18 +518,18 @@
             </div>
 
             <div class="pt-2">
-              <h3 class="font-bold text-[#1F2937] mb-3">菜品明细</h3>
+              <h3 class="font-bold text-slate-800 mb-3">菜品明细</h3>
               <div class="space-y-3">
                 <div
                   v-for="(item, index) in orderDetails"
                   :key="index"
-                  class="flex items-center gap-3 p-3 bg-[#FFF9F5] rounded-lg"
+                  class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg"
                 >
                   <div class="flex-1">
-                    <h4 class="font-medium text-[#1F2937]">{{ item.dishName }}</h4>
+                    <h4 class="font-medium text-slate-800">{{ item.dishName }}</h4>
                     <div class="flex justify-between items-center mt-1">
                       <span class="text-[#F97316] font-bold">¥{{ item.unitPrice }}</span>
-                      <span class="text-[#6B7280]">x{{ item.quantity }}</span>
+                      <span class="text-slate-500">x{{ item.quantity }}</span>
                     </div>
                   </div>
                 </div>
@@ -531,7 +538,7 @@
           </div>
         </div>
 
-        <div class="p-4 border-t border-slate-200 bg-[#FFF9F5]">
+        <div class="p-4 border-t border-slate-200 bg-slate-50">
           <div class="flex justify-between items-center text-xl font-bold">
             <span>总计</span>
             <span class="text-[#F97316]">¥{{ parseFloat(selectedOrder?.totalAmount || 0).toFixed(2) }}</span>
@@ -866,10 +873,26 @@ const submitOrder = async () => {
 
 const fetchMyOrders = async () => {
   try {
+    console.log('开始获取订单列表...')
+    console.log('当前用户信息:', userStore.userInfo)
     const response = await request.get('/orders/list')
-    myOrders.value = response.sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
+    console.log('订单列表响应:', response)
+    if (response && Array.isArray(response)) {
+      myOrders.value = response.sort((a, b) => {
+        const dateA = a.createTime ? new Date(a.createTime).getTime() : 0
+        const dateB = b.createTime ? new Date(b.createTime).getTime() : 0
+        return dateB - dateA
+      })
+      console.log('处理后的订单列表:', myOrders.value)
+    } else {
+      console.error('订单响应格式不正确:', response)
+      myOrders.value = []
+    }
   } catch (error) {
     console.error('获取订单失败:', error)
+    console.error('错误详情:', error.response)
+    alert('获取订单失败: ' + (error.message || '未知错误'))
+    myOrders.value = []
   }
 }
 
@@ -878,32 +901,29 @@ const openOrderDetail = async (order) => {
   showOrderDetail.value = true
   
   try {
+    console.log('获取订单详情，订单号:', order.orderNo)
     const response = await request.get(`/orders/${order.orderNo}`)
+    console.log('订单详情响应:', response)
     orderDetails.value = response.orderDetails || []
+    console.log('订单详情:', orderDetails.value)
   } catch (error) {
     console.error('获取订单详情失败:', error)
+    console.error('错误详情:', error.response)
     orderDetails.value = []
+    alert('获取订单详情失败: ' + (error.message || '未知错误'))
   }
   
   await nextTick()
   
   if (orderDetailRef.value) {
     const keyframes = [
-      { 
-        transform: 'translateY(0)', 
-        opacity: 0,
-        borderRadius: '16px'
-      },
-      { 
-        transform: 'translateY(0)', 
-        opacity: 1,
-        borderRadius: '16px'
-      }
+      { transform: 'scale(0.9)', opacity: 0 },
+      { transform: 'scale(1)', opacity: 1 }
     ]
     
     const options = {
-      duration: 300,
-      easing: 'ease-in-out',
+      duration: 250,
+      easing: 'cubic-bezier(0.2, 0.9, 0.4, 1.1)',
       fill: 'forwards'
     }
     
@@ -914,21 +934,13 @@ const openOrderDetail = async (order) => {
 const closeOrderDetail = async () => {
   if (orderDetailRef.value) {
     const keyframes = [
-      { 
-        transform: 'translateY(0)', 
-        opacity: 1,
-        borderRadius: '16px'
-      },
-      { 
-        transform: 'translateY(0)', 
-        opacity: 0,
-        borderRadius: '16px'
-      }
+      { transform: 'scale(1)', opacity: 1 },
+      { transform: 'scale(0.9)', opacity: 0 }
     ]
     
     const options = {
       duration: 200,
-      easing: 'ease-out',
+      easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
       fill: 'forwards'
     }
     
