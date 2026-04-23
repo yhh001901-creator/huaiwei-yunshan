@@ -146,13 +146,13 @@
               <h3 class="text-on-surface font-semibold text-lg line-clamp-1">{{ dish.name }}</h3>
               <div class="flex justify-between items-center mt-2">
                 <span class="text-primary font-headline font-bold text-xl">¥ {{ dish.price }}</span>
-                <div 
+                <button 
                   v-if="dish.status === 1"
                   class="bg-primary text-white p-2 rounded-full flex items-center justify-center cursor-pointer"
                   @click="addToCart(dish)"
                 >
                   <span class="text-xl">+</span>
-                </div>
+                </button>
                 <div v-else class="bg-outline-variant text-white p-2 rounded-full flex items-center justify-center">
                   <span class="text-xl">✕</span>
                 </div>

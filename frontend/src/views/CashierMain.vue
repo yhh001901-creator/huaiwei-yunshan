@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="flex h-screen overflow-hidden text-on-background">
     <aside class="h-full w-[15%] fixed left-0 top-0 bg-slate-100 dark:bg-slate-800 flex flex-col py-8 z-50">
       <div class="px-6 mb-10">
@@ -107,7 +107,7 @@
                   </div>
                   <button
                     v-if="dish.status === 1"
-                    @click="addToCart(dish)"
+                    @click.stop="addToCart(dish)"
                     class="w-8 h-8 bg-teal-600 text-white rounded-full flex items-center justify-center hover:bg-teal-700"
                   >
                     +
