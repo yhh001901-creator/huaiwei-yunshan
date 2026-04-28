@@ -6,6 +6,7 @@ if (!Math) {
   "./pages/index/index.js";
   "./pages/orders/orders.js";
   "./pages/mine/mine.js";
+  "./pages/member/member.js";
 }
 const _sfc_main = {
   __name: "App",

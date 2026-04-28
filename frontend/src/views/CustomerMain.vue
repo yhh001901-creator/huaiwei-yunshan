@@ -10,37 +10,51 @@
             <span class="text-white/80 text-xs">积分: {{ memberInfo.point || 0 }}</span>
           </div>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="relative">
           <button 
-            @click="currentView = 'menu'"
+            @click="toggleNavMenu"
             :class="[
-              'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-              currentView === 'menu' ? 'bg-white text-[#F97316] shadow-md' : 'btn-3d-orange'
+              'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2',
+              showNavMenu ? 'bg-white text-[#F97316] shadow-md' : 'bg-white/20 hover:bg-white/30'
             ]"
           >
-            开始点餐
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            <span>导航菜单</span>
           </button>
-          <button 
-            @click="showOrders"
-            :class="[
-              'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-              currentView === 'orders' ? 'bg-white text-[#F97316] shadow-md' : 'btn-3d-orange'
-            ]"
+
+          <div 
+            v-if="showNavMenu"
+            ref="navMenuRef"
+            class="nav-dropdown"
           >
-            我的订单
-          </button>
-          <button 
-            @click="showMemberCenter"
-            :class="[
-              'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-              currentView === 'member' ? 'bg-white text-[#F97316] shadow-md' : 'btn-3d-orange'
-            ]"
-          >
-            会员中心
-          </button>
-          <button @click="handleLogout" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-            退出
-          </button>
+            <div class="nav-menu-item" @click="navTo('menu')">
+              <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              <span>开始点餐</span>
+            </div>
+            <div class="nav-menu-item" @click="navTo('orders')">
+              <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+              <span>我的订单</span>
+            </div>
+            <div class="nav-menu-item" @click="navTo('member')">
+              <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+              </svg>
+              <span>会员中心</span>
+            </div>
+            <div class="nav-menu-divider"></div>
+            <div class="nav-menu-item nav-menu-logout" @click="handleLogout">
+              <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 8H7m0 0V7a2 2 0 012-2h2"></path>
+              </svg>
+              <span>退出登录</span>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -550,7 +564,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores/user'
 import request, { imageBaseURL } from '../utils/request'
@@ -567,6 +581,8 @@ const showSuccessToast = ref(false)
 const showTablePicker = ref(false)
 const showOrderDetail = ref(false)
 const showCouponPicker = ref(false)
+const showNavMenu = ref(false)
+const navMenuRef = ref(null)
 const selectedOrder = ref(null)
 const orderDetails = ref([])
 const cartButtonRef = ref(null)
@@ -1015,6 +1031,57 @@ const handleLogout = () => {
   router.push('/login')
 }
 
+const toggleNavMenu = async () => {
+  if (!showNavMenu.value) {
+    showNavMenu.value = true
+    await nextTick()
+    if (navMenuRef.value) {
+      const keyframes = [
+        { transform: 'scaleY(0) translateY(-10px)', opacity: 0 },
+        { transform: 'scaleY(1) translateY(0)', opacity: 1 }
+      ]
+      const options = {
+        duration: 250,
+        easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+        fill: 'forwards'
+      }
+      navMenuRef.value.animate(keyframes, options)
+    }
+  } else {
+    if (navMenuRef.value) {
+      const keyframes = [
+        { transform: 'scaleY(1) translateY(0)', opacity: 1 },
+        { transform: 'scaleY(0) translateY(-10px)', opacity: 0 }
+      ]
+      const options = {
+        duration: 200,
+        easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+        fill: 'forwards'
+      }
+      const animation = navMenuRef.value.animate(keyframes, options)
+      animation.onfinish = () => {
+        showNavMenu.value = false
+      }
+    } else {
+      showNavMenu.value = false
+    }
+  }
+}
+
+const navTo = (view) => {
+  showNavMenu.value = false
+  if (view === 'menu') {
+    currentView.value = 'menu'
+  } else if (view === 'orders') {
+    currentView.value = 'orders'
+    fetchMyOrders()
+  } else if (view === 'member') {
+    currentView.value = 'member'
+    loadMemberData()
+    loadAvailableCouponTemplates()
+  }
+}
+
 const formatDate = (dateString) => {
   const date = new Date(dateString)
   return date.toLocaleString('zh-CN', {
@@ -1027,12 +1094,35 @@ const formatDate = (dateString) => {
   })
 }
 
+const handleNavMenuClickOutside = (e) => {
+  if (showNavMenu.value && navMenuRef.value && !navMenuRef.value.parentElement.contains(e.target)) {
+    const keyframes = [
+      { transform: 'scaleY(1) translateY(0)', opacity: 1 },
+      { transform: 'scaleY(0) translateY(-10px)', opacity: 0 }
+    ]
+    const options = {
+      duration: 200,
+      easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      fill: 'forwards'
+    }
+    const animation = navMenuRef.value.animate(keyframes, options)
+    animation.onfinish = () => {
+      showNavMenu.value = false
+    }
+  }
+}
+
 onMounted(() => {
   fetchCategories()
   fetchDishes()
   loadMemberData()
   loadCouponTemplates()
   loadAvailableCouponTemplates()
+  document.addEventListener('click', handleNavMenuClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleNavMenuClickOutside)
 })
 </script>
 
@@ -1083,6 +1173,65 @@ onMounted(() => {
 .btn-3d-orange:active {
   transform: translateY(3px);
   box-shadow: 0 3px 0 #C2410C;
+}
+
+/* 导航菜单下拉样式 */
+.nav-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08);
+  min-width: 180px;
+  z-index: 60;
+  overflow: hidden;
+  transform-origin: top right;
+  will-change: transform, opacity;
+}
+
+.nav-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  color: #1F2937;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.nav-menu-item:hover {
+  background: #FFF9F5;
+}
+
+.nav-menu-item:active {
+  background: #FFE4D6;
+}
+
+.nav-menu-divider {
+  height: 1px;
+  background: #E2E8F0;
+  margin: 4px 0;
+}
+
+.nav-menu-logout {
+  color: #EF4444;
+}
+
+.nav-menu-logout:hover {
+  background: #FEF2F2;
+}
+
+.nav-menu-logout:active {
+  background: #FEE2E2;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 </style>
 

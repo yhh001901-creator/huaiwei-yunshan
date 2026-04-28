@@ -1,0 +1,451 @@
+
+.container.data-v-member001 {
+  min-height: 100vh;
+  background: #F8FAFC;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+}
+
+/* 会员卡片 */
+.member-card.data-v-member001 {
+  position: relative;
+  margin: 16rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+.card-bg.data-v-member001 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #1F2937 0%, #374151 50%, #4B5563 100%);
+}
+.card-content.data-v-member001 {
+  position: relative;
+  z-index: 1;
+  padding: 36rpx 32rpx;
+  padding-top: calc(36rpx + env(safe-area-inset-top));
+}
+.user-info.data-v-member001 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32rpx;
+}
+.avatar.data-v-member001 {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: rgba(249,115,22,0.2);
+  border: 3rpx solid rgba(249,115,22,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.avatar-text.data-v-member001 {
+  font-size: 40rpx;
+  color: #FB923C;
+  font-weight: bold;
+}
+.info-area.data-v-member001 {
+  flex: 1;
+  margin-left: 20rpx;
+  min-width: 0;
+}
+.nickname.data-v-member001 {
+  font-size: 34rpx;
+  color: white;
+  font-weight: bold;
+  display: block;
+}
+.phone.data-v-member001 {
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.6);
+  margin-top: 4rpx;
+  display: block;
+}
+.badge.data-v-member001 {
+  display: inline-block;
+  font-size: 20rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  margin-top: 8rpx;
+}
+.vip-badge.data-v-member001 {
+  background: linear-gradient(135deg, #F97316, #FBBF24);
+  color: white;
+  font-weight: 600;
+}
+.normal-badge.data-v-member001 {
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+}
+.stats-row.data-v-member001 {
+  display: flex;
+  border-top: 1rpx solid rgba(255,255,255,0.1);
+  padding-top: 24rpx;
+}
+.stat-box.data-v-member001 {
+  flex: 1;
+  text-align: center;
+}
+.stat-value.data-v-member001 {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #F97316;
+  display: block;
+}
+.stat-value.expire-text.data-v-member001 {
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.7);
+}
+.stat-label.data-v-member001 {
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.5);
+  margin-top: 4rpx;
+  display: block;
+}
+
+/* 操作区域 */
+.action-section.data-v-member001 {
+  padding: 24rpx 16rpx 0;
+}
+.action-row.data-v-member001 {
+  display: flex;
+  gap: 16rpx;
+}
+.checkin-btn.data-v-member001 {
+  flex: 1;
+  background: white;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+.checkin-btn:active.data-v-member001 {
+  opacity: 0.8;
+}
+.checkin-btn.checked.data-v-member001 {
+  opacity: 0.6;
+}
+.checkin-icon.data-v-member001 {
+  font-size: 40rpx;
+  width: 56rpx;
+  height: 56rpx;
+  background: linear-gradient(135deg, #F97316, #FB923C);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 24rpx;
+}
+.checkin-btn.checked .checkin-icon.data-v-member001 {
+  background: #94A3B8;
+}
+.checkin-text.data-v-member001 {
+  font-size: 28rpx;
+  color: #1F2937;
+  font-weight: 600;
+}
+.point-record-btn.data-v-member001 {
+  flex: 1;
+  background: white;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+.point-record-btn:active.data-v-member001 {
+  opacity: 0.8;
+}
+.record-text.data-v-member001 {
+  font-size: 28rpx;
+  color: #1F2937;
+  font-weight: 600;
+}
+.record-arrow.data-v-member001 {
+  font-size: 22rpx;
+  color: #94A3B8;
+}
+
+/* 开通会员 */
+.activate-section.data-v-member001 {
+}
+.activate-card.data-v-member001 {
+  background: linear-gradient(135deg, #FFF7ED, #FFEDD5);
+  border: 2rpx solid #FED7AA;
+  border-radius: 20rpx;
+  padding: 40rpx 32rpx;
+  text-align: center;
+}
+.activate-icon.data-v-member001 {
+  font-size: 64rpx;
+  margin-bottom: 12rpx;
+}
+.activate-title.data-v-member001 {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #1F2937;
+  display: block;
+}
+.activate-desc.data-v-member001 {
+  font-size: 24rpx;
+  color: #6B7280;
+  margin-top: 8rpx;
+  display: block;
+}
+.activate-btn.data-v-member001 {
+  display: inline-block;
+  margin-top: 24rpx;
+  padding: 20rpx 64rpx;
+  background: linear-gradient(135deg, #F97316, #FB923C);
+  color: white;
+  font-size: 30rpx;
+  font-weight: 600;
+  border-radius: 40rpx;
+  box-shadow: 0 6rpx 20rpx rgba(249,115,22,0.3);
+}
+.activate-btn:active.data-v-member001 {
+  opacity: 0.85;
+  transform: scale(0.97);
+}
+
+/* 优惠券区域 */
+.coupon-section.data-v-member001 {
+  padding: 24rpx 16rpx 0;
+}
+.section-header.data-v-member001 {
+  margin-bottom: 16rpx;
+}
+.tabs.data-v-member001 {
+  display: flex;
+  background: #F1F5F9;
+  border-radius: 16rpx;
+  padding: 6rpx;
+}
+.coupon-tab.data-v-member001 {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx;
+  border-radius: 12rpx;
+}
+.coupon-tab:active.data-v-member001 {
+  opacity: 0.8;
+}
+.coupon-tab.active.data-v-member001 {
+  background: #F97316;
+  box-shadow: 0 4rpx 12rpx rgba(249,115,22,0.3);
+}
+.tab-text.data-v-member001 {
+  font-size: 26rpx;
+  color: #64748B;
+  font-weight: 500;
+}
+.coupon-tab.active .tab-text.data-v-member001 {
+  color: white;
+}
+
+/* 优惠券列表 */
+.coupon-list.data-v-member001 {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.empty-state.data-v-member001 {
+  text-align: center;
+  padding: 60rpx 0;
+}
+.empty-icon.data-v-member001 {
+  font-size: 64rpx;
+  display: block;
+  margin-bottom: 12rpx;
+}
+.empty-text.data-v-member001 {
+  font-size: 26rpx;
+  color: #94A3B8;
+}
+.coupon-card.data-v-member001 {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+  position: relative;
+}
+.coupon-card.disabled.data-v-member001 {
+  opacity: 0.5;
+}
+.coupon-left.data-v-member001 {
+  width: 180rpx;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #F97316, #FB923C);
+  padding: 24rpx 16rpx;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.coupon-value.data-v-member001 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: white;
+  display: block;
+}
+.coupon-type.data-v-member001 {
+  font-size: 20rpx;
+  color: rgba(255,255,255,0.8);
+  margin-top: 4rpx;
+}
+.coupon-right.data-v-member001 {
+  flex: 1;
+  padding: 20rpx 24rpx;
+  min-width: 0;
+}
+.receive-right.data-v-member001 {
+  padding-right: 120rpx;
+}
+.coupon-name.data-v-member001 {
+  font-size: 28rpx;
+  color: #1F2937;
+  font-weight: 600;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.coupon-status.data-v-member001 {
+  font-size: 22rpx;
+  margin-top: 4rpx;
+  display: block;
+}
+.coupon-date.data-v-member001 {
+  font-size: 20rpx;
+  color: #94A3B8;
+  margin-top: 4rpx;
+  display: block;
+}
+.receive-btn.data-v-member001 {
+  position: absolute;
+  right: 24rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 12rpx 28rpx;
+  background: linear-gradient(135deg, #F97316, #FB923C);
+  color: white;
+  font-size: 24rpx;
+  font-weight: 600;
+  border-radius: 24rpx;
+}
+.receive-btn:active.data-v-member001 {
+  opacity: 0.85;
+}
+
+/* 弹窗 */
+.modal-overlay.data-v-member001 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+}
+.modal.data-v-member001 {
+  background: white;
+  width: 100%;
+  border-radius: 32rpx 32rpx 0 0;
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+}
+.modal-header.data-v-member001 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #E2E8F0;
+  flex-shrink: 0;
+}
+.modal-title.data-v-member001 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1F2937;
+}
+.modal-close.data-v-member001 {
+  background: transparent;
+  border: none;
+  font-size: 40rpx;
+  color: #94A3B8;
+  padding: 0;
+  min-width: 88rpx;
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-body.data-v-member001 {
+  padding: 16rpx 24rpx;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* 积分记录 */
+.point-item.data-v-member001 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #F1F5F9;
+}
+.point-item:last-child.data-v-member001 {
+  border-bottom: none;
+}
+.point-left.data-v-member001 {
+  flex: 1;
+  min-width: 0;
+}
+.point-source.data-v-member001 {
+  font-size: 28rpx;
+  color: #1F2937;
+  font-weight: 500;
+  display: block;
+}
+.point-type.data-v-member001 {
+  font-size: 22rpx;
+  color: #94A3B8;
+  margin-top: 4rpx;
+  display: block;
+}
+.point-right.data-v-member001 {
+  text-align: right;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+.point-amount.data-v-member001 {
+  font-size: 30rpx;
+  font-weight: bold;
+  display: block;
+}
+.point-amount.point-add.data-v-member001 {
+  color: #F97316;
+}
+.point-amount.point-sub.data-v-member001 {
+  color: #64748B;
+}
+.point-time.data-v-member001 {
+  font-size: 20rpx;
+  color: #94A3B8;
+  margin-top: 4rpx;
+  display: block;
+}

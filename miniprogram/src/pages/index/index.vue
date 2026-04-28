@@ -5,6 +5,34 @@
         <text class="header-title">淮味云膳</text>
         <text class="header-subtitle">欢迎，{{ username }}</text>
       </view>
+      <view class="header-right">
+        <view class="nav-menu-btn" :class="{ active: showNavMenu }" @tap="toggleNavMenu">
+          <text class="nav-icon-text">☰</text>
+          <text class="nav-text">菜单</text>
+        </view>
+      </view>
+    </view>
+
+    <view v-if="showNavMenu" class="nav-overlay" @tap="closeNavMenu">
+      <view class="nav-dropdown" @tap.stop>
+        <view class="nav-menu-item" @tap="navTo('menu')">
+          <text class="nav-item-icon">🍽️</text>
+          <text class="nav-item-text">开始点餐</text>
+        </view>
+        <view class="nav-menu-item" @tap="navTo('orders')">
+          <text class="nav-item-icon">📋</text>
+          <text class="nav-item-text">我的订单</text>
+        </view>
+        <view class="nav-menu-item" @tap="navTo('member')">
+          <text class="nav-item-icon">👑</text>
+          <text class="nav-item-text">会员中心</text>
+        </view>
+        <view class="nav-divider"></view>
+        <view class="nav-menu-item nav-menu-logout" @tap="handleLogout">
+          <text class="nav-item-icon">🚪</text>
+          <text class="nav-item-text">退出登录</text>
+        </view>
+      </view>
     </view>
 
     <view v-if="loading" class="loading-container">
@@ -161,6 +189,7 @@ const cartStore = useCartStore()
 const username = computed(() => userStore.username || '')
 const loading = ref(true)
 const error = ref(false)
+const showNavMenu = ref(false)
 
 const categories = ref([])
 const dishes = ref([])
@@ -239,6 +268,40 @@ function selectTable(t) {
   showTablePicker.value = false
 }
 
+function toggleNavMenu() {
+  showNavMenu.value = !showNavMenu.value
+}
+
+function closeNavMenu() {
+  showNavMenu.value = false
+}
+
+function navTo(page) {
+  showNavMenu.value = false
+  if (page === 'menu') {
+    uni.showToast({ title: '已在点餐页面', icon: 'none' })
+  } else if (page === 'orders') {
+    uni.switchTab({ url: '/pages/orders/orders' })
+  } else if (page === 'member') {
+    uni.navigateTo({ url: '/pages/member/member' })
+  }
+}
+
+function handleLogout() {
+  showNavMenu.value = false
+  uni.showModal({
+    title: '退出登录',
+    content: '确定要退出登录吗？',
+    confirmColor: '#F97316',
+    success: (res) => {
+      if (res.confirm) {
+        userStore.logout()
+        uni.reLaunch({ url: '/pages/login/login' })
+      }
+    }
+  })
+}
+
 async function submitOrder() {
   if (!tableNo.value || cartItems.value.length === 0) return
   try {
@@ -274,6 +337,138 @@ onMounted(() => {
   background: #F97316;
   padding: 24rpx 24rpx;
   padding-top: calc(24rpx + env(safe-area-inset-top));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  flex: 1;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.nav-menu-btn {
+  background: rgba(255,255,255,0.2);
+  border-radius: 16rpx;
+  padding: 12rpx 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  transition: all 0.2s;
+}
+
+.nav-menu-btn:active {
+  opacity: 0.7;
+}
+
+.nav-menu-btn.active {
+  background: rgba(255,255,255,0.9);
+}
+
+.nav-menu-btn.active .nav-icon-text,
+.nav-menu-btn.active .nav-text {
+  color: #F97316;
+}
+
+.nav-icon-text {
+  font-size: 28rpx;
+  color: white;
+  line-height: 1;
+}
+
+.nav-text {
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.9);
+  font-weight: 500;
+}
+
+.nav-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 100;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.nav-dropdown {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 120rpx);
+  right: 24rpx;
+  background: white;
+  border-radius: 24rpx;
+  box-shadow: 0 10rpx 25rpx rgba(0,0,0,0.15);
+  min-width: 320rpx;
+  z-index: 101;
+  overflow: hidden;
+  animation: slideDown 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideDown {
+  from { 
+    transform: scaleY(0) translateY(-10rpx);
+    opacity: 0;
+    transform-origin: top right;
+  }
+  to { 
+    transform: scaleY(1) translateY(0);
+    opacity: 1;
+    transform-origin: top right;
+  }
+}
+
+.nav-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 32rpx;
+  gap: 20rpx;
+  transition: background 0.15s;
+}
+
+.nav-menu-item:active {
+  background: #FFF9F5;
+}
+
+.nav-item-icon {
+  font-size: 40rpx;
+  width: 48rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.nav-item-text {
+  font-size: 30rpx;
+  color: #1F2937;
+  font-weight: 500;
+  flex: 1;
+}
+
+.nav-menu-logout {
+  border-top: 2rpx solid #F1F5F9;
+}
+
+.nav-menu-logout:active {
+  background: #FEF2F2;
+}
+
+.nav-menu-logout .nav-item-text {
+  color: #EF4444;
+}
+
+.nav-divider {
+  height: 2rpx;
+  background: #E2E8F0;
 }
 
 .header-title {

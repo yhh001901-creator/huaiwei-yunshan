@@ -31,6 +31,9 @@ const _sfc_main = {
         orderCount.value = 0;
       }
     }
+    function goToMember() {
+      common_vendor.index.navigateTo({ url: "/pages/member/member" });
+    }
     function goToOrders() {
       common_vendor.index.switchTab({ url: "/pages/orders/orders" });
     }
@@ -135,6 +138,7 @@ const _sfc_main = {
         k: common_vendor.o(($event) => showPasswordModal.value = true),
         l: common_vendor.o(($event) => showAboutModal.value = true),
         m: common_vendor.o(handleLogout),
+        P: common_vendor.o(goToMember),
         n: showEditModal.value
       }, showEditModal.value ? {
         o: common_vendor.o(($event) => showEditModal.value = false),

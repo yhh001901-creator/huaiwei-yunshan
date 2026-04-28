@@ -4,7 +4,8 @@
     "pages/login/login",
     "pages/index/index",
     "pages/orders/orders",
-    "pages/mine/mine"
+    "pages/mine/mine",
+    "pages/member/member"
   ],
   "window": {
     "navigationBarTextStyle": "white",

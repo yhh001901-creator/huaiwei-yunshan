@@ -1,0 +1,134 @@
+<view class="container data-v-member001">
+  <!-- 会员信息卡片 -->
+  <view class="member-card data-v-member001">
+    <view class="card-bg data-v-member001"></view>
+    <view class="card-content data-v-member001">
+      <view class="user-info data-v-member001">
+        <view class="avatar data-v-member001">
+          <text class="avatar-text data-v-member001">{{a}}</text>
+        </view>
+        <view class="info-area data-v-member001">
+          <text class="nickname data-v-member001">{{b}}</text>
+          <text class="phone data-v-member001">{{c}}</text>
+          <view class="{{['badge', 'data-v-member001', d]}}">{{c}}</view>
+        </view>
+      </view>
+      <view class="stats-row data-v-member001">
+        <view class="stat-box data-v-member001">
+          <text class="stat-value data-v-member001">{{e}}</text>
+          <text class="stat-label data-v-member001">积分</text>
+        </view>
+        <view class="stat-box data-v-member001">
+          <text class="stat-value expire-text data-v-member001">{{f}}</text>
+          <text class="stat-label data-v-member001">有效期</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 会员操作区域 -->
+  <view class="action-section data-v-member001">
+    <view wx:if="{{g}}" class="action-row data-v-member001">
+      <view class="{{['checkin-btn', 'data-v-member001', i]}}" bindtap="{{h}}">
+        <text class="checkin-icon data-v-member001">{{k}}</text>
+        <text class="checkin-text data-v-member001">{{j}}</text>
+      </view>
+      <view class="point-record-btn data-v-member001" bindtap="{{l}}">
+        <text class="record-text data-v-member001">积分记录</text>
+        <text class="record-arrow data-v-member001">{{m}} ›</text>
+      </view>
+    </view>
+    <view wx:else class="activate-section data-v-member001">
+      <view class="activate-card data-v-member001">
+        <view class="activate-icon data-v-member001">👑</view>
+        <text class="activate-title data-v-member001">开通VIP会员</text>
+        <text class="activate-desc data-v-member001">享受会员专属折扣、积分奖励、专属优惠券等权益</text>
+        <view class="activate-btn data-v-member001" bindtap="{{n}}">立即开通</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 优惠券区域 -->
+  <view class="coupon-section data-v-member001">
+    <view class="section-header data-v-member001">
+      <view class="tabs data-v-member001">
+        <view class="{{['coupon-tab', 'data-v-member001', o && 'active']}}" bindtap="{{p}}">
+          <text class="tab-text data-v-member001">我的优惠券</text>
+        </view>
+        <view class="{{['coupon-tab', 'data-v-member001', q && 'active']}}" bindtap="{{r}}">
+          <text class="tab-text data-v-member001">可领优惠券</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 我的优惠券列表 -->
+    <view wx:if="{{o}}" class="coupon-list data-v-member001">
+      <view wx:if="{{s}}" class="empty-state data-v-member001">
+        <text class="empty-icon data-v-member001">🎫</text>
+        <text class="empty-text data-v-member001">暂无优惠券</text>
+      </view>
+      <block wx:for="{{t}}" wx:for-item="coupon" wx:key="h">
+        <view class="coupon-card {{coupon.e ? 'disabled' : ''}} data-v-member001">
+          <view class="coupon-left data-v-member001">
+            <text class="coupon-value data-v-member001">{{coupon.c}}</text>
+            <text class="coupon-type data-v-member001">{{coupon.b}}</text>
+          </view>
+          <view class="coupon-right data-v-member001">
+            <text class="coupon-name data-v-member001">{{coupon.a}}</text>
+            <text class="coupon-status data-v-member001">{{coupon.d}}</text>
+            <text class="coupon-date data-v-member001">{{coupon.f}} ~ {{coupon.g}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 可领优惠券列表 -->
+    <view wx:if="{{u}}" class="coupon-list data-v-member001">
+      <view wx:if="{{v}}" class="empty-state data-v-member001">
+        <text class="empty-icon data-v-member001">🎁</text>
+        <text class="empty-text data-v-member001">暂无可领优惠券</text>
+      </view>
+      <block wx:for="{{w}}" wx:for-item="tpl" wx:key="e">
+        <view class="coupon-card data-v-member001">
+          <view class="coupon-left data-v-member001">
+            <text class="coupon-value data-v-member001">{{tpl.c}}</text>
+            <text class="coupon-type data-v-member001">{{tpl.b}}</text>
+          </view>
+          <view class="coupon-right receive-right data-v-member001">
+            <text class="coupon-name data-v-member001">{{tpl.a}}</text>
+            <text class="coupon-date data-v-member001">领取后{{tpl.d}}天内有效</text>
+          </view>
+          <view class="receive-btn data-v-member001" bindtap="{{tpl.f}}">领取</view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 积分记录弹窗 -->
+  <view wx:if="{{x}}" class="modal-overlay data-v-member001" bindtap="{{y}}">
+    <view class="modal data-v-member001" catchtap="{{z}}">
+      <view class="modal-header data-v-member001">
+        <text class="modal-title data-v-member001">积分记录</text>
+        <button class="modal-close data-v-member001" bindtap="{{y}}">×</button>
+      </view>
+      <view class="modal-body data-v-member001">
+        <view wx:if="{{A}}" class="empty-state data-v-member001">
+          <text class="empty-icon data-v-member001">📝</text>
+          <text class="empty-text data-v-member001">暂无积分记录</text>
+        </view>
+        <block wx:for="{{B}}" wx:key="f">
+          <view class="point-item data-v-member001">
+            <view class="point-left data-v-member001">
+              <text class="point-source data-v-member001">{{item.c}}</text>
+              <text class="point-type data-v-member001">{{item.d}}</text>
+            </view>
+            <view class="point-right data-v-member001">
+              <text class="{{['point-amount', 'data-v-member001', item.b]}}">{{item.a}}</text>
+              <text class="point-time data-v-member001">{{item.e}}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+</view>
